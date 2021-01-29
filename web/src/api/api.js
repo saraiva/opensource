@@ -1,37 +1,39 @@
 import axios from 'axios';
-//import createAuthRefreshInterceptor from 'axios-auth-refresh';
-import config from '../config.js';
+import config from '../config';
+// import createAuthRefreshInterceptor from 'axios-auth-refresh';
 
-const a = axios.create({
-  baseURL: config.API_URL
+const axiosBase = axios.create({
+  baseURL: config.API_URL,
 });
 
-a.interceptors.request.use(request => {
-    request.headers['Authorization'] = "Bearer " + localStorage.getItem('token');
-    return request;
+axiosBase.interceptors.request.use((request) => {
+  request.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
+  return request;
 });
 
-/*const refreshAuthLogic = failedRequest => a.get('refresh_token').then(tokenRefreshResponse => {
-    localStorage.setItem('token', tokenRefreshResponse.data.token);
-    localStorage.setItem('expire', tokenRefreshResponse.data.expire);
-    failedRequest.response.config.headers['Authentication'] = 'Bearer ' + tokenRefreshResponse.data.token;
-    return Promise.resolve();
+export default axiosBase;
+
+/* const refreshAuthLogic = failedRequest => axiosBase.get('refresh_token')
+    .then(tokenRefreshResponse => {
+      localStorage.setItem('token', tokenRefreshResponse.data.token);
+      localStorage.setItem('expire', tokenRefreshResponse.data.expire);
+      failedRequest.response.config.headers['Authentication'] = \
+       'Bearer ' + tokenRefreshResponse.data.token;
+      return Promise.resolve();
 });
 
-createAuthRefreshInterceptor(a, refreshAuthLogic);*/
-
-export default a;
+createAuthRefreshInterceptor(a, refreshAuthLogic); */
 
 export function getToken() {
-  return localStorage.getItem('token')
+  return localStorage.getItem('token');
 }
 
 export function getAPIObject(url) {
   return {
-     url: config.API_URL + url,
-     headers: {
-      Authorization: "Bearer " + getToken(),
-     },
+    url: config.API_URL + url,
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
   };
 }
 
@@ -39,9 +41,9 @@ export function getAPI(baseURL) {
   const a = axios.create({
     baseURL,
   });
-  a.interceptors.request.use(request => {
-      request.headers['Authorization'] = "Bearer " + getToken();
-      return request;
+  axiosBase.interceptors.request.use((request) => {
+    request.headers.Authorization = `Bearer ${getToken()}`;
+    return request;
   });
-  return a
+  return a;
 }

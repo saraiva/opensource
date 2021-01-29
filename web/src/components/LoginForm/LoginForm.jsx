@@ -1,29 +1,31 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { login } from '../../actions';
+import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+// import Typography from '@material-ui/core/Typography';
+import { login } from '../../actions';
 import './LoginForm.css';
 
 class LoginForm extends React.Component {
-
   constructor() {
     super();
-    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleSubmit(event) {
     event.preventDefault();
-    const data = new FormData(event.target);
-    this.props.dispatchLogin(data.get('username'), data.get('password'));
+    const { dispatchLogin } = this.props;
+    const { target } = event;
+    const data = new FormData(target);
+    dispatchLogin(data.get('username'), data.get('password'));
   }
 
   render() {
     const { loginError, error } = this.props;
-
-    return <div className="paper-loginform">
+    return (
+      <div className="paper-loginform">
         { loginError && <span className="error">{ error }</span> }
         <h1>Login</h1>
         <form className="form" onSubmit={this.handleSubmit} noValidate>
@@ -55,26 +57,33 @@ class LoginForm extends React.Component {
             color="primary"
             className="signin-button"
           >
-            Let's Go
+            Let&apos;s Go
           </Button>
 
           <div className="shortcuts">
             Lost Password | Documentation
           </div>
         </form>
-    </div>
+      </div>
+    );
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   loginError: state.auth.loginError,
   error: state.auth.error,
-})
+});
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
+const mapDispatchToProps = (dispatch) => ({
   dispatchLogin: (username, password) => {
-    dispatch(login(username, password))
+    dispatch(login(username, password));
   },
-})
+});
+
+LoginForm.propTypes = {
+  loginError: PropTypes.bool.isRequired,
+  error: PropTypes.string.isRequired,
+  dispatchLogin: PropTypes.func.isRequired,
+};
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(LoginForm));
